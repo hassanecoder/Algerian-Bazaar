@@ -1,22 +1,31 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Dzaïr Marketplace API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: listings
+    description: Store listings and products
+  - name: stores
+    description: Store profiles
+  - name: categories
+    description: Product categories
+  - name: wilayas
+    description: Algerian wilayas
+  - name: search
+    description: Search endpoints
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,201 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /listings:
+    get:
+      operationId: getListings
+      tags: [listings]
+      summary: Get all listings with optional filters
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: wilayaId
+          in: query
+          schema:
+            type: integer
+        - name: storeId
+          in: query
+          schema:
+            type: integer
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingsResponse"
+
+  /listings/{id}:
+    get:
+      operationId: getListingById
+      tags: [listings]
+      summary: Get a single listing by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Listing detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /stores:
+    get:
+      operationId: getStores
+      tags: [stores]
+      summary: Get all stores
+      parameters:
+        - name: wilayaId
+          in: query
+          schema:
+            type: integer
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of stores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Store"
+
+  /stores/{id}:
+    get:
+      operationId: getStoreById
+      tags: [stores]
+      summary: Get a store profile by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Store profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories:
+    get:
+      operationId: getCategories
+      tags: [categories]
+      summary: Get all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /wilayas:
+    get:
+      operationId: getWilayas
+      tags: [wilayas]
+      summary: Get all Algerian wilayas
+      responses:
+        "200":
+          description: List of wilayas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Wilaya"
+
+  /search:
+    get:
+      operationId: searchAll
+      tags: [search]
+      summary: Search across listings and stores
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [listings]
+      summary: Get marketplace statistics
+      responses:
+        "200":
+          description: Marketplace stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketplaceStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +238,257 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Wilaya:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: integer
+        name:
+          type: string
+        nameAr:
+          type: string
+        region:
+          type: string
+      required:
+        - id
+        - code
+        - name
+        - nameAr
+        - region
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        nameAr:
+          type: string
+        icon:
+          type: string
+        listingCount:
+          type: integer
+      required:
+        - id
+        - name
+        - nameAr
+        - icon
+        - listingCount
+
+    Store:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        nameAr:
+          type: string
+        description:
+          type: string
+        wilayaId:
+          type: integer
+        wilayaName:
+          type: string
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        logoUrl:
+          type: string
+        coverUrl:
+          type: string
+        rating:
+          type: number
+        reviewCount:
+          type: integer
+        listingCount:
+          type: integer
+        isVerified:
+          type: boolean
+        isFeatured:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - nameAr
+        - description
+        - wilayaId
+        - wilayaName
+        - categoryId
+        - categoryName
+        - phone
+        - address
+        - rating
+        - reviewCount
+        - listingCount
+        - isVerified
+        - isFeatured
+        - createdAt
+
+    StoreDetail:
+      allOf:
+        - $ref: "#/components/schemas/Store"
+        - type: object
+          properties:
+            email:
+              type: string
+            website:
+              type: string
+            openingHours:
+              type: string
+            listings:
+              type: array
+              items:
+                $ref: "#/components/schemas/Listing"
+          required:
+            - listings
+
+    Listing:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleAr:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        imageUrl:
+          type: string
+        storeId:
+          type: integer
+        storeName:
+          type: string
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        wilayaId:
+          type: integer
+        wilayaName:
+          type: string
+        condition:
+          type: string
+        isFeatured:
+          type: boolean
+        isNegotiable:
+          type: boolean
+        viewCount:
+          type: integer
+        createdAt:
+          type: string
+      required:
+        - id
+        - title
+        - titleAr
+        - description
+        - price
+        - currency
+        - storeId
+        - storeName
+        - categoryId
+        - categoryName
+        - wilayaId
+        - wilayaName
+        - condition
+        - isFeatured
+        - isNegotiable
+        - viewCount
+        - createdAt
+
+    ListingDetail:
+      allOf:
+        - $ref: "#/components/schemas/Listing"
+        - type: object
+          properties:
+            images:
+              type: array
+              items:
+                type: string
+            store:
+              $ref: "#/components/schemas/Store"
+            relatedListings:
+              type: array
+              items:
+                $ref: "#/components/schemas/Listing"
+          required:
+            - images
+            - store
+            - relatedListings
+
+    ListingsResponse:
+      type: object
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+        total:
+          type: integer
+        page:
+          type: integer
+        totalPages:
+          type: integer
+      required:
+        - listings
+        - total
+        - page
+        - totalPages
+
+    SearchResults:
+      type: object
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+        stores:
+          type: array
+          items:
+            $ref: "#/components/schemas/Store"
+        total:
+          type: integer
+      required:
+        - listings
+        - stores
+        - total
+
+    MarketplaceStats:
+      type: object
+      properties:
+        totalListings:
+          type: integer
+        totalStores:
+          type: integer
+        totalWilayas:
+          type: integer
+        totalCategories:
+          type: integer
+      required:
+        - totalListings
+        - totalStores
+        - totalWilayas
+        - totalCategories

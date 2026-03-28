@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "For page transitions and smooth micro-interactions"
+  "clsx": "For conditional class name merging"
+  "tailwind-merge": "For merging tailwind classes safely"
+  "date-fns": "For human-readable date formatting"
+
+images:
+  - path: "artifacts/marketplace/public/images/hero-bg.png"
+    description: "A beautiful, vibrant Mediterranean market scene in Algiers, warm sunlight, terracotta and deep blue tones, abstract and modern, suitable for a hero background"
+    aspect_ratio: "16:9"
+  - path: "artifacts/marketplace/public/images/store-pattern.png"
+    description: "Abstract geometric pattern with warm terracotta, sandy orange, and deep teal colors, subtle texture, used as a fallback cover image for stores"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using @workspace/api-client-react for TanStack Query hooks
+  - Assuming English UI with French/Arabic localized badges and data as specified
