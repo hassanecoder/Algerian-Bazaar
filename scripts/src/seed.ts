@@ -1,13 +1,23 @@
 import { db, wilayasTable, categoriesTable, storesTable, listingsTable } from "@workspace/db";
 
 async function seed() {
-  console.log("🌱 Seeding Dzaïr Marketplace database...");
+  const seedMode = process.env.SEED_MODE === "bootstrap" ? "bootstrap" : "reset";
+  console.log(`🌱 Seeding Dzaïr Marketplace database in ${seedMode} mode...`);
 
-  // Clear existing data
-  await db.delete(listingsTable);
-  await db.delete(storesTable);
-  await db.delete(categoriesTable);
-  await db.delete(wilayasTable);
+  if (seedMode === "bootstrap") {
+    const existing = await db.select().from(storesTable).limit(1);
+    if (existing.length > 0) {
+      console.log("Bootstrap seed skipped; stores already present");
+      return;
+    }
+  }
+
+  if (seedMode === "reset") {
+    await db.delete(listingsTable);
+    await db.delete(storesTable);
+    await db.delete(categoriesTable);
+    await db.delete(wilayasTable);
+  }
 
   // Seed Wilayas
   const wilayas = await db.insert(wilayasTable).values([
