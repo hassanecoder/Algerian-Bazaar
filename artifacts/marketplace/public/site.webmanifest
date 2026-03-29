@@ -1,0 +1,21 @@
+{
+  "name": "Dzaïr Marketplace",
+  "short_name": "Dzaïr Market",
+  "description": "Algeria's all-in-one marketplace. Buy and sell electronics, fashion, home goods, vehicles, and more. Connect with sellers across all 58 wilayas on Dzaïr Marketplace.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#EA580C",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ]
+}
